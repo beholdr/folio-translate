@@ -1,0 +1,16 @@
+{
+    "name": "folio-translate",
+    "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bullseye",
+    "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "EditorConfig.EditorConfig",
+        "laravel.vscode-laravel",
+        "liamhammett.temphpest",
+        "neilbrayfield.php-docblocker",
+        "shardulm94.trailing-spaces"
+      ]
+    }
+  }
+}

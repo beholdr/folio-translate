@@ -1,19 +1,13 @@
-# Translate your folio views in Laravel.
+# Folio Translate
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/beholdr/folio-translate.svg?style=flat-square)](https://packagist.org/packages/beholdr/folio-translate)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/beholdr/folio-translate/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/beholdr/folio-translate/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/beholdr/folio-translate/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/beholdr/folio-translate/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/beholdr/folio-translate.svg?style=flat-square)](https://packagist.org/packages/beholdr/folio-translate)
+Easy translation for Laravel Folio pages.
+This package based on [mcamara/laravel-localization](https://github.com/mcamara/laravel-localization).
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package extends `laravel-localization` with these features:
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/folio-translate.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/folio-translate)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+- translate Folio content via files in the same folder
+- check and hide unsupported locales in a language switcher
+- redirect to a default locale if a page does not support current locale
 
 ## Installation
 
@@ -23,37 +17,113 @@ You can install the package via composer:
 composer require beholdr/folio-translate
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="folio-translate-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="folio-translate-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="folio-translate-views"
-```
-
 ## Usage
 
+Add middleware alias in your `bootstrap/app.php`:
+
 ```php
-$folioTranslate = new Beholdr\FolioTranslate();
-echo $folioTranslate->echoPhrase('Hello, Beholdr!');
+return Application::configure(basePath: dirname(__DIR__))
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            // other middleware aliases...
+            'supportedLocales' => \Beholdr\FolioTranslate\Middleware\SupportedLocales::class,
+        ]);
+```
+
+Add middlewares in your `app/Providers/FolioServiceProvider.php`:
+
+```php
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Laravel\Folio\Folio;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+
+class FolioServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        $locale = LaravelLocalization::setLocale();
+
+        Folio::path(resource_path('views/pages'))->middleware([
+            '*' => [
+                'localeSessionRedirect',
+                'localizationRedirect',
+                'supportedLocales',
+            ],
+        ])->uri($locale ?? '');
+    }
+}
+```
+
+### Content translation
+
+Given you have a page `views/pages/index.blade.php` and want to translate it to `english` and `russian` languages.
+
+1. Call `translate` function in `views/pages/index.blade.php` file:
+
+```php
+<?php
+
+use function Beholdr\FolioTranslate\translate;
+
+translate();
+
+?>
+```
+
+2. Create `views/pages/index-en.blade.php` and `views/pages/index-ru.blade.php` files in the same directory with original file
+
+3. Put your translated content in these files. They will be rendered for each corresponding locale
+
+### Language switcher
+
+This library automatically detects languages supported for a current Folio page.
+Unsupported languages still active, but get a `hidden` attribute, so you need to filter them manually:
+
+```blade
+<ul>
+    @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+        @if (empty($properties['hidden']))
+            <li>
+                <a href="{{ LaravelLocalization::getLocalizedURL($localeCode, forceDefaultLocation: true) }}">
+                    {{ $properties['native'] }}
+                </a>
+            </li>
+        @endif
+    @endforeach
+</ul>
+```
+
+### Fallback locale
+
+You can pass an optional argument to `translate` function to specify default (fallback) locale: `translate('en')`.
+This locale will be used to load content if there is no translation for a current locale.
+
+If not specified, it equals to a system `APP_FALLBACK_LOCALE`.
+
+### Define supported languages manually
+
+Sometimes you need to define supported languages for page manually. It even could be non-Folio page.
+In this case you can use middleware `supportedLocales` or a helper method `setSupportedLanguagesKeys`.
+
+#### Middleware
+
+You can add `supportedLocales` middleware with a list of supported languages to any route:
+
+```php
+Route::get('/news', NewsController::class)
+    ->middleware('supportedLocales:en,ru');
+```
+
+In this case given page will support passed languages.
+
+#### Helper method
+
+Also you can programmatically set supported languages, using `FolioTranslate::setSupportedLanguagesKeys()` method:
+
+```php
+FolioTranslate::setSupportedLanguagesKeys(['en', 'ru']);
 ```
 
 ## Testing
@@ -61,23 +131,6 @@ echo $folioTranslate->echoPhrase('Hello, Beholdr!');
 ```bash
 composer test
 ```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Alexander Shabunevich](https://github.com/beholdr)
-- [All Contributors](../../contributors)
 
 ## License
 

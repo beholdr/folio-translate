@@ -1,6 +1,6 @@
 {
     "name": "beholdr/folio-translate",
-    "description": "Translate your Folio views in Laravel.",
+    "description": "Easy translation for Laravel Folio pages.",
     "keywords": [
         "laravel",
         "folio",
@@ -17,8 +17,10 @@
     ],
     "require": {
         "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0||^12.0"
+        "illuminate/contracts": "^10.0||^11.0||^12.0",
+        "laravel/folio": "^1.1",
+        "mcamara/laravel-localization": "^2.3",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -34,9 +36,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Beholdr\\FolioTranslate\\": "src/",
-            "Beholdr\\FolioTranslate\\Database\\Factories\\": "database/factories/"
-        }
+            "Beholdr\\FolioTranslate\\": "src/"
+        },
+        "files": [
+            "functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -47,7 +51,7 @@
     "scripts": {
         "post-autoload-dump": "@composer run prepare",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "analyse": "vendor/bin/phpstan analyse",
+        "analyse": "vendor/bin/phpstan --memory-limit=1G analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
         "format": "vendor/bin/pint"

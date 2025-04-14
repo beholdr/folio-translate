@@ -4,7 +4,6 @@ namespace Beholdr\FolioTranslate;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Beholdr\FolioTranslate\Commands\FolioTranslateCommand;
 
 class FolioTranslateServiceProvider extends PackageServiceProvider
 {
@@ -15,11 +14,6 @@ class FolioTranslateServiceProvider extends PackageServiceProvider
          *
          * More info: https://github.com/spatie/laravel-package-tools
          */
-        $package
-            ->name('folio-translate')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_folio_translate_table')
-            ->hasCommand(FolioTranslateCommand::class);
+        $package->name('folio-translate');
     }
 }

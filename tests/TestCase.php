@@ -2,9 +2,9 @@
 
 namespace Beholdr\FolioTranslate\Tests;
 
+use Beholdr\FolioTranslate\FolioTranslateServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Beholdr\FolioTranslate\FolioTranslateServiceProvider;
 
 class TestCase extends Orchestra
 {
