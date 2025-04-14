@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Beholdr\FolioTranslate\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FolioTranslateCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'folio-translate';
 
     public $description = 'My command';
 
