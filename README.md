@@ -74,7 +74,14 @@ translate();
 
 2. Create `views/pages/index-en.blade.php` and `views/pages/index-ru.blade.php` files in the same directory with original file
 
-3. Put your translated content in these files. They will be rendered for each corresponding locale
+3. Put your translated content in these files. They will be rendered for each corresponding locale.
+For example `views/pages/index-en.blade.php`:
+
+```blade
+<x-layouts.base title="English page">
+    English content...
+</x-layouts.base>
+```
 
 ### Language switcher
 
