@@ -72,7 +72,19 @@ translate();
 ?>
 ```
 
-2. Create `views/pages/index-en.blade.php` and `views/pages/index-ru.blade.php` files in the same directory with original file
+2. Create `views/pages/index-en.blade.php` and `views/pages/index-ru.blade.php` files in the same directory with original file. Translated files should have the same prefix as the original file, for example:
+
+```
+views
+  pages
+    some-path
+      filename.blade.php
+      filename-en.blade.php
+      filename-ru.blade.php
+    index.blade.php
+    index-en.blade.php
+    index-ru.blade.php
+```
 
 3. Put your translated content in these files. They will be rendered for each corresponding locale.
 For example `views/pages/index-en.blade.php`:
@@ -104,7 +116,7 @@ Route::get('/news', NewsController::class)
     ->middleware('supportedLocales:en,ru');
 ```
 
-In this case given page will support passed languages.
+In this case a page will support passed languages.
 
 #### Helper method
 
