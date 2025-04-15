@@ -6,7 +6,6 @@ use Beholdr\FolioTranslate\Actions\GetFolioTranslations;
 use Beholdr\FolioTranslate\Actions\SetSupportedLanguagesKeys;
 use Closure;
 use Illuminate\Http\Request;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationMiddlewareBase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,7 +22,6 @@ class SupportedLocales extends LaravelLocalizationMiddlewareBase
             return $next($request);
         }
 
-        $current = app()->getLocale();
         $default = app()->getFallbackLocale();
 
         if (empty($locales)) {
@@ -31,15 +29,9 @@ class SupportedLocales extends LaravelLocalizationMiddlewareBase
             $locales = ! empty($translations) ? $translations : [$default];
         }
 
-        // redirect to default locale if current locale not found
-        // e.g. when navigate to a frontpage from localized country page
-        if (! in_array($current, $locales, true) && $current !== $default) {
-            return redirect(
-                LaravelLocalization::getLocalizedURL($default, forceDefaultLocation: true), Response::HTTP_MOVED_PERMANENTLY
-            );
+        if ($redirect = app(SetSupportedLanguagesKeys::class)($locales)) {
+            return $redirect;
         }
-
-        app(SetSupportedLanguagesKeys::class)($locales);
 
         return $next($request);
     }

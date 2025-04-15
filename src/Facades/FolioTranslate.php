@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static array getFolioTranslations(string $url)
  * @method static ?string getFolioView(string $url)
- * @method static void setSupportedLanguagesKeys(array $langs = [])
+ * @method static ?\Illuminate\Http\RedirectResponse setSupportedLanguagesKeys(array $langs = [])
  *
  * @see \Beholdr\FolioTranslate\FolioTranslate
  */

@@ -5,6 +5,7 @@ namespace Beholdr\FolioTranslate;
 use Beholdr\FolioTranslate\Actions\GetFolioTranslations;
 use Beholdr\FolioTranslate\Actions\GetFolioView;
 use Beholdr\FolioTranslate\Actions\SetSupportedLanguagesKeys;
+use Illuminate\Http\RedirectResponse;
 
 class FolioTranslate
 {
@@ -18,8 +19,8 @@ class FolioTranslate
         return app(GetFolioView::class)($url);
     }
 
-    public function setSupportedLanguagesKeys(array $langs = []): void
+    public function setSupportedLanguagesKeys(array $langs = []): ?RedirectResponse
     {
-        app(SetSupportedLanguagesKeys::class)($langs);
+        return app(SetSupportedLanguagesKeys::class)($langs);
     }
 }

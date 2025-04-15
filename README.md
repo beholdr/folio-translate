@@ -83,25 +83,6 @@ For example `views/pages/index-en.blade.php`:
 </x-layouts.base>
 ```
 
-### Language switcher
-
-This library automatically detects languages supported for a current Folio page.
-Unsupported languages still active, but get a `hidden` attribute, so you need to filter them manually:
-
-```blade
-<ul>
-    @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-        @if (empty($properties['hidden']))
-            <li>
-                <a href="{{ LaravelLocalization::getLocalizedURL($localeCode, forceDefaultLocation: true) }}">
-                    {{ $properties['native'] }}
-                </a>
-            </li>
-        @endif
-    @endforeach
-</ul>
-```
-
 ### Fallback locale
 
 You can pass an optional argument to `translate` function to specify default (fallback) locale: `translate('en')`.
@@ -130,8 +111,12 @@ In this case given page will support passed languages.
 Also you can programmatically set supported languages, using `FolioTranslate::setSupportedLanguagesKeys()` method:
 
 ```php
-FolioTranslate::setSupportedLanguagesKeys(['en', 'ru']);
+if ($redirect = FolioTranslate::setSupportedLanguagesKeys(['ru', 'en'])) {
+    return $redirect;
+}
 ```
+
+In case of absent translation for current language, `setSupportedLanguagesKeys` will return redirect to a default locale version.
 
 ## Testing
 
